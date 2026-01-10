@@ -60,6 +60,14 @@ jobs:
               python scripts/writer.py
               
               echo ""
+              echo "=== DEBUG: Listing drafts directory ==="
+              ls -la drafts/ || echo "Drafts directory not found"
+              
+              echo ""
+              echo "=== DEBUG: Listing _data directory ==="
+              ls -la _data/ || echo "_data directory not found"
+              
+              echo ""
               echo "=== Phase 3: Editor Agent ==="
               python scripts/editor.py
               
@@ -84,7 +92,9 @@ jobs:
           path: |
             logs/
             reports/
-            _data/context.json
+            drafts/
+            reviews/
+            _data/
           retention-days: 30
 
       - name: Commit Dashboard Update
