@@ -1,0 +1,65 @@
+# =============================================================================
+# SiteOps Configuration
+# =============================================================================
+
+# 1. Target Bio Site
+target:
+  repo: "avisangle/avisangle.github.io.git"  # UPDATE THIS to your actual bio site repo
+  branch: "main"
+  output_dir: "projects/"
+  template_path: "templates/project_detail.html"
+
+# 2. Project Discovery (Dynamic via GitHub Topics)
+discovery:
+  method: "topic"  # "topic" (dynamic) | "list" (static)
+  topic_tag: "portfolio-project"  # Tag repos with this topic to include
+  owner: "avisangle"  # GitHub username to search
+  fallback_list:  # Used if discovery fails or method: "list"
+    - avisangle/jenkins-mcp-server
+    - avisangle/make-twitter-oauth
+    - avisangle/method-crm-mcp
+
+# 3. Workflow Mode
+workflow:
+  mode: "manual"  # "auto" (direct push) | "manual" (create PR)
+  force_pr_on_high_risk: true  # Force PR if content change exceeds threshold
+  high_risk_threshold: 30  # Percentage of content change
+
+# 4. Significance Scoring Weights
+scoring:
+  new_release: 100
+  readme_changed: 40
+  feat_commit: 30
+  refactor_commit: 30
+  fix_commit: 15
+  docs_commit: 0
+  style_commit: 0
+  chore_commit: 0
+  no_commits: -999
+  update_threshold: 15  # Minimum score to trigger update
+
+# 5. Policy (Editor's Rulebook)
+policy:
+  forbidden_words:
+    - "game-changing"
+    - "revolutionary"
+    - "best-in-class"
+    - "cutting-edge"
+    - "world-class"
+    - "synergy"
+  max_summary_length: 150
+  required_sections:
+    - "changelog"
+    - "status-badge"
+  tone: "professional, objective, technical"
+
+# 6. Collector Settings
+collector:
+  commits_lookback_days: 30  # Only check commits from last N days
+  readme_excerpt_length: 500  # Characters to extract from README
+
+# 7. Observability
+logging:
+  retention_days: 30
+  alert_on_failure: true  # Open Issue on Manager Repo if script crashes
+  cost_tracking: true

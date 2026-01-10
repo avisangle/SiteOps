@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{PROJECT_DESCRIPTION}}">
+    <title>{{PROJECT_NAME}} - Avinash Sangle</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav>
+        <a href="../index.html">← Back to Portfolio</a>
+    </nav>
+    
+    <main class="project-detail">
+        <header>
+            <h1>{{PROJECT_NAME}}</h1>
+            <div id="status-badge">
+                <!-- Status badge: active/maintained/archived -->
+                <span class="badge badge--active">Active</span>
+            </div>
+        </header>
+        
+        <section id="summary">
+            <h2>Overview</h2>
+            <p>{{PROJECT_SUMMARY}}</p>
+        </section>
+        
+        <section id="tech-stack">
+            <h2>Technologies</h2>
+            <ul class="tech-list">
+                {{#LANGUAGES}}
+            </ul>
+        </section>
+        
+        <section id="changelog">
+            <h2>Recent Updates</h2>
+            <ul class="changelog">
+                {{#CHANGELOG}}
+            </ul>
+        </section>
+        
+        <section id="links">
+            <h2>Links</h2>
+            <ul>
+                <li><a href="{{REPO_URL}}" target="_blank">GitHub Repository</a></li>
+                {{#DEMO_LINK}}
+            </ul>
+        </section>
+        
+        <!-- MANUAL:awards -->
+        <!-- Add any awards, mentions, or custom content here -->
+        <!-- This section is preserved during AI updates -->
+        <!-- /MANUAL:awards -->
+        
+        <!-- MANUAL:notes -->
+        <!-- Personal notes or additional context -->
+        <!-- /MANUAL:notes -->
+    </main>
+    
+    <footer>
+        <p>&copy; 2026 Avinash Sangle</p>
+    </footer>
+    
+    <script src="../js/main.js"></script>
+</body>
+</html>
