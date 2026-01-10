@@ -1,11 +1,20 @@
 {
-  "total_runs": 0,
+  "total_runs": 1,
   "successful_runs": 0,
-  "failed_runs": 0,
+  "failed_runs": 1,
   "total_projects_updated": 0,
   "total_prs_created": 0,
   "total_direct_pushes": 0,
   "total_cost_usd": 0.0,
-  "last_run": null,
-  "runs": []
+  "last_run": "2026-01-10T04:27:57.918860Z",
+  "runs": [
+    {
+      "run_id": "20260110-042757",
+      "timestamp": "2026-01-10T04:27:57.918860Z",
+      "success": false,
+      "cost": "$0.0000",
+      "updates": 0
+    }
+  ],
+  "total_cost_formatted": "$0.00"
 }
