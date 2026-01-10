@@ -43,21 +43,34 @@ jobs:
       - name: Install Dependencies
         run: pip install -r requirements.txt
 
-      - name: Run Collector (Phase 1)
-        id: collector
-        run: python scripts/collector.py
-        
-      - name: Run Writer Agent (Phase 2)
-        if: steps.collector.outputs.has_updates == 'true'
-        run: python scripts/writer.py
-
-      - name: Run Editor Agent (Phase 3)
-        if: steps.collector.outputs.has_updates == 'true'
-        run: python scripts/editor.py
-
-      - name: Run Deployer (Phase 4)
-        if: steps.collector.outputs.has_updates == 'true'
-        run: python scripts/deployer.py
+      - name: Run SiteOps Pipeline
+        id: pipeline
+        run: |
+          echo "=== Phase 1: Collector ==="
+          python scripts/collector.py
+          
+          # Check if there are updates to process
+          if [ -f "_data/context.json" ]; then
+            UPDATES=$(python -c "import json; ctx=json.load(open('_data/context.json')); print(ctx['summary']['updates'] + ctx['summary']['new'])")
+            if [ "$UPDATES" -gt 0 ]; then
+              echo "has_updates=true" >> $GITHUB_OUTPUT
+              
+              echo ""
+              echo "=== Phase 2: Writer Agent ==="
+              python scripts/writer.py
+              
+              echo ""
+              echo "=== Phase 3: Editor Agent ==="
+              python scripts/editor.py
+              
+              echo ""
+              echo "=== Phase 4: Deployer ==="
+              python scripts/deployer.py
+            else
+              echo "has_updates=false" >> $GITHUB_OUTPUT
+              echo "No updates needed, skipping Writer/Editor/Deployer"
+            fi
+          fi
 
       - name: Run Observer (Phase 5)
         if: always()

@@ -4,7 +4,7 @@
 
 # 1. Target Bio Site
 target:
-  repo: "avisangle/avisangle.github.io.git"  # UPDATE THIS to your actual bio site repo
+  repo: "avisangle/avisangle.github.io"  # Your bio site repo
   branch: "main"
   output_dir: "projects/"
   template_path: "templates/project_detail.html"

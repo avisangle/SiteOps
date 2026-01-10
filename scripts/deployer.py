@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 import yaml
-from github import Github, GithubException
+from github import Github, GithubException, Auth
 
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -32,9 +32,10 @@ class Deployer:
     def __init__(self, config_path: str = "config/settings.yaml"):
         self.config = self._load_config(config_path)
         
-        # GitHub client for Bio Site repo
+        # GitHub client for Bio Site repo (using new Auth pattern)
         bio_site_pat = os.environ.get("BIO_SITE_PAT") or os.environ.get("GITHUB_TOKEN")
-        self.gh = Github(bio_site_pat)
+        auth = Auth.Token(bio_site_pat)
+        self.gh = Github(auth=auth)
         
         target = self.config["target"]
         self.target_repo = self.gh.get_repo(target["repo"])
