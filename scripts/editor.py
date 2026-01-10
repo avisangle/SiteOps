@@ -77,9 +77,8 @@ class EditorAgent:
             print(f"\n  → Reviewing {slug}")
             
             # Load the draft
-            draft_content = self._load_draft(draft_info["path"])
+            draft_content = self._load_draft(draft_info["path"], slug)
             if not draft_content:
-                print(f"    ✗ Draft file not found")
                 continue
             
             # Find matching project context
@@ -153,11 +152,31 @@ class EditorAgent:
         with open(results_path, "r") as f:
             return json.load(f)
     
-    def _load_draft(self, path: str) -> Optional[str]:
+    def _load_draft(self, path: str, slug: str) -> Optional[str]:
         """Load draft content from file."""
+        # Try the provided path first
         draft_path = Path(path)
+        
+        # If not found, try constructing from slug
         if not draft_path.exists():
+            draft_path = Path(f"drafts/{slug}.html")
+        
+        # Debug: show what we're looking for
+        if not draft_path.exists():
+            import os
+            cwd = os.getcwd()
+            print(f"    ✗ Draft not found at: {path}")
+            print(f"      CWD: {cwd}")
+            print(f"      Tried: {draft_path.absolute()}")
+            # List drafts directory
+            drafts_dir = Path("drafts")
+            if drafts_dir.exists():
+                files = list(drafts_dir.iterdir())
+                print(f"      Drafts dir contents: {[f.name for f in files]}")
+            else:
+                print(f"      Drafts dir does not exist")
             return None
+        
         with open(draft_path, "r") as f:
             return f.read()
     
