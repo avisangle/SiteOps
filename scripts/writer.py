@@ -34,7 +34,10 @@ class WriterAgent:
             loader=FileSystemLoader("prompts"),
             autoescape=False
         )
-        self.dry_run = os.environ.get("DRY_RUN", "false").lower() == "true"
+        # More robust dry_run detection
+        dry_run_env = os.environ.get("DRY_RUN", "false").lower().strip()
+        self.dry_run = dry_run_env in ("true", "1", "yes")
+        print(f"    [DEBUG] DRY_RUN env='{os.environ.get('DRY_RUN', 'NOT SET')}' -> dry_run={self.dry_run}")
         
         # Track token usage for cost calculation
         self.usage = {
@@ -252,9 +255,16 @@ class WriterAgent:
         
         draft_path = drafts_dir / f"{slug}.html"
         
-        if not self.dry_run:
-            with open(draft_path, "w") as f:
-                f.write(content)
+        # Always write the file (dry_run only affects deployment, not drafts)
+        with open(draft_path, "w") as f:
+            f.write(content)
+        
+        # Verify file was written
+        if draft_path.exists():
+            size = draft_path.stat().st_size
+            print(f"      [DEBUG] File written: {draft_path} ({size} bytes)")
+        else:
+            print(f"      [DEBUG] ERROR: File NOT written: {draft_path}")
         
         return draft_path
     
