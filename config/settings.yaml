@@ -6,7 +6,8 @@
 target:
   repo: "avisangle/avisangle.github.io"  # Your bio site repo
   branch: "main"
-  output_dir: "projects/"
+  output_dir: ""  # Root directory (empty = root)
+  file_pattern: "project-{slug}.html"  # Naming pattern for project pages
   template_path: "templates/project_detail.html"
 
 # 2. Project Discovery (Dynamic via GitHub Topics)

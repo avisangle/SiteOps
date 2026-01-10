@@ -56,7 +56,8 @@ class Collector:
         
         # Step 2: Build Bio Site index
         bio_index = self.bio_site.get_project_index(
-            self.config["target"]["output_dir"]
+            output_dir=self.config["target"].get("output_dir", ""),
+            file_pattern=self.config["target"].get("file_pattern", "{slug}.html")
         )
         print(f"📄 Bio Site has {len(bio_index)} existing project pages")
         

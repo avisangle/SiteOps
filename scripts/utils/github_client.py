@@ -170,37 +170,64 @@ class BioSiteClient:
         self.owner, self.repo = repo.split("/")
         self.branch = branch
     
-    def get_project_index(self, output_dir: str = "projects/") -> dict:
-        """Build index of existing project pages."""
+    def get_project_index(self, output_dir: str = "", file_pattern: str = "{slug}.html") -> dict:
+        """
+        Build index of existing project pages.
+        
+        Args:
+            output_dir: Directory containing project pages ("" for root)
+            file_pattern: Naming pattern like "project-{slug}.html"
+        """
         index = {}
         
+        # Build regex from pattern to extract slug
+        # "project-{slug}.html" -> r"project-(.+)\.html"
+        pattern_regex = file_pattern.replace("{slug}", "(.+)").replace(".", r"\.")
+        
+        # Determine the path to list
+        list_path = output_dir.rstrip("/") if output_dir else ""
+        
         try:
-            # List files in output directory
+            # List files in directory (empty string = root)
+            endpoint = f"/repos/{self.owner}/{self.repo}/contents"
+            if list_path:
+                endpoint += f"/{list_path}"
+            
             response = self.gh._request(
                 "GET",
-                f"/repos/{self.owner}/{self.repo}/contents/{output_dir}",
+                endpoint,
                 params={"ref": self.branch}
             )
             
             for item in response.json():
-                if item["type"] == "file" and item["name"].endswith(".html"):
-                    slug = item["name"].replace(".html", "")
-                    content = self.gh.get_file_content(
-                        self.owner, self.repo, item["path"], self.branch
-                    )
-                    
-                    index[slug] = {
-                        "exists": True,
-                        "path": item["path"],
-                        "sha": item["sha"],
-                        "content": content,
-                        "manual_sections": self._extract_manual_sections(content) if content else [],
-                        "locked": self._check_lock(content) if content else False,
-                        "last_deploy": self._extract_deploy_date(content) if content else None
-                    }
-        except requests.exceptions.HTTPError:
-            # Directory doesn't exist yet
-            pass
+                if item["type"] != "file" or not item["name"].endswith(".html"):
+                    continue
+                
+                # Try to extract slug from filename
+                match = re.match(pattern_regex, item["name"])
+                if not match:
+                    continue
+                
+                slug = match.group(1)
+                print(f"    [BioSite] Found existing page: {item['name']} -> slug: {slug}")
+                
+                content = self.gh.get_file_content(
+                    self.owner, self.repo, item["path"], self.branch
+                )
+                
+                index[slug] = {
+                    "exists": True,
+                    "path": item["path"],
+                    "filename": item["name"],
+                    "sha": item["sha"],
+                    "content": content,
+                    "manual_sections": self._extract_manual_sections(content) if content else [],
+                    "locked": self._check_lock(content) if content else False,
+                    "last_deploy": self._extract_deploy_date(content) if content else None
+                }
+                
+        except requests.exceptions.HTTPError as e:
+            print(f"    [BioSite] Could not list directory: {e}")
         
         return index
     

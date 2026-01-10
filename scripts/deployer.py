@@ -40,7 +40,8 @@ class Deployer:
         target = self.config["target"]
         self.target_repo = self.gh.get_repo(target["repo"])
         self.target_branch = target["branch"]
-        self.output_dir = target["output_dir"]
+        self.output_dir = target.get("output_dir", "")
+        self.file_pattern = target.get("file_pattern", "{slug}.html")
         
         # Workflow settings
         workflow = self.config["workflow"]
@@ -191,7 +192,7 @@ class Deployer:
             ).hexdigest()
         
         # Get the current SHA from GitHub
-        file_path = f"{self.output_dir}{slug}.html"
+        file_path = self._get_file_path(slug)
         try:
             current_file = self.target_repo.get_contents(file_path, ref=self.target_branch)
             result["current_sha"] = current_file.sha
@@ -231,6 +232,16 @@ class Deployer:
         # Auto mode + APPROVE = direct push
         return False
     
+    def _get_file_path(self, slug: str) -> str:
+        """
+        Get the full file path for a project page.
+        Uses file_pattern from config (e.g., "project-{slug}.html").
+        """
+        filename = self.file_pattern.replace("{slug}", slug)
+        if self.output_dir:
+            return f"{self.output_dir.rstrip('/')}/{filename}"
+        return filename
+    
     def _create_pull_request(self, slug: str, content: str, verdict: dict) -> str:
         """Create a PR with the draft changes."""
         if self.dry_run:
@@ -266,7 +277,8 @@ class Deployer:
                 raise
         
         # Create/update the file
-        file_path = f"{self.output_dir}{slug}.html"
+        file_path = self._get_file_path(slug)
+        print(f"    [DEBUG] File path: {file_path}")
         
         try:
             # Check if file exists
@@ -346,7 +358,7 @@ class Deployer:
         if self.dry_run:
             return
         
-        file_path = f"{self.output_dir}{slug}.html"
+        file_path = self._get_file_path(slug)
         
         try:
             # Check if file exists
